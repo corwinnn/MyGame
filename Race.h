@@ -13,14 +13,15 @@ public:
     IRace(){}
 
     string getNameRace() {return nameRace; }
-    string getArcher() {return nameArcher; }
+    string getNameArcher() {return nameArcher; }
     string getNameWarrior() {return nameWarrior; }
     string getNameSpy() {return nameSpy; }
     int getBonusMove() {return bonusMove; }
     int getBonusAttack() {return bonusAttack; }
     int getBonusDefence() {return bonusDefence; }
     int getBonusArcherDistance() {return bonusArcherDistance; }
-    int getLookDistance() {return bonuslookDistance; }
+    int getBonusLookDistance() {return bonuslookDistance; }
+    int getBonusHealth() { return bonusHealth; }
 
     virtual void superAction()=0;
 
@@ -34,6 +35,7 @@ protected:
     int bonusDefence;
     int bonusArcherDistance;
     int bonuslookDistance;
+    int bonusHealth;
 };
 
 class Dwarfes : public IRace {
@@ -48,6 +50,7 @@ public:
         bonusDefence = 5;
         bonusArcherDistance = -1;
         bonuslookDistance = 1;
+        bonusHealth = 10;
     }
 
     void superAction() override { bonusAttack++; }
@@ -65,6 +68,7 @@ public:
         bonusDefence = 0;
         bonusArcherDistance = 0;
         bonuslookDistance = 0;
+        bonusHealth = 0;
     }
 
     void superAction() override { bonusDefence++; }
@@ -82,6 +86,7 @@ public:
         bonusDefence = 0;
         bonusArcherDistance = 0;
         bonuslookDistance = -1;
+        bonusHealth = 10;
     }
 
     void superAction() override { bonusArcherDistance++; }
