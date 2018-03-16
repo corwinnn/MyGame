@@ -1,5 +1,5 @@
 //
-// Created by mike on 15.03.18.
+// Created by Mike on 15.03.18.
 //
 
 #ifndef MYGAME_MAP_H
@@ -30,6 +30,7 @@ public:
 
 
     void showMap() {
+        cout << endl;
         for (int i = 0; i <= 9; i++) {
             cout << i << "  ";
         }
@@ -55,7 +56,7 @@ public:
 
     int getSize(){ return size; }
 private:
-    int size = 50;
+    int size = 30;
 
 };
 
