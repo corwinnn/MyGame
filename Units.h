@@ -347,6 +347,18 @@ public:
 
 };
 
+class Factory {
+public:
+    static IUnit* create(string type, IRace* race, Map* m, bool ie) {
+        if (type == "Spy")
+            return new Spy(race, m, ie);
+        if (type == "Archer")
+            return new Archer(race, m, ie);
+        if (type == "Warrior")
+            return new Warrior(race, m, ie);
+
+    }
+};
 
 
 

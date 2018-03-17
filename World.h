@@ -25,9 +25,9 @@ public:
             for (int j = 0; j < mask.size();j++)
                 mask[i].push_back(NULL);
         enemyArmy.resize(3);
-        enemyArmy[0] = new Spy(enemyRace, m, 1);
-        enemyArmy[1] = new Archer(enemyRace, m, 1);
-        enemyArmy[2] = new Warrior(enemyRace, m, 1);
+        enemyArmy[0] = Factory::create("Spy", enemyRace, m, 1);
+        enemyArmy[1] = Factory::create("Archer", enemyRace, m, 1);
+        enemyArmy[2] = Factory::create("Warrior", enemyRace, m, 1);
         enemyArmy[0]->setArmy(&enemyArmy);
         enemyArmy[1]->setArmy(&enemyArmy);
         enemyArmy[2]->setArmy(&enemyArmy);
@@ -39,9 +39,9 @@ public:
         mask[4][24] = enemyArmy[2];
 
         myArmy.resize(3);
-        myArmy[0] = new Spy(myRace, m, 0);
-        myArmy[1] = new Archer(myRace, m, 0);
-        myArmy[2] = new Warrior(myRace, m, 0);
+        myArmy[0] = Factory::create("Spy", myRace, m, 0);
+        myArmy[1] = Factory::create("Archer", myRace, m, 0);
+        myArmy[2] = Factory::create("Warrior", myRace, m, 0);
         myArmy[0]->setArmy(&myArmy);
         myArmy[1]->setArmy(&myArmy);
         myArmy[2]->setArmy(&myArmy);
