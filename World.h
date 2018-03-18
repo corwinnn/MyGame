@@ -83,6 +83,9 @@ public:
 
     }
 
+    IUnit* getMyUnit(int n){
+        return myArmy[n];
+    }
     void healing() const {
         for (auto i : myArmy) {
             if (i)
@@ -94,52 +97,50 @@ public:
         }
     }
 
-    void war() {
-        bool win = false;
-        bool lose = false;
-        int step = 0;
-        while(!win && !lose) {
-            m->showMap();
-            step++;
-            cout << endl << "STEP " << " " << step << endl;
-            win = true;
-            lose = true;
-            if (myArmy[0]) {
-                myArmy[0]->takeOrders();
-                lose = false;
-            }
-            if (myArmy[1]) {
-                myArmy[1]->takeOrders();
-                lose = false;
-            }
-            if (myArmy[2]) {
-                myArmy[2]->takeOrders();
-                lose = false;
-            }
-
-            healing();
-
-            if (enemyArmy[0]) {
-                cout << "Enemy:" << endl;
-                enemyArmy[0]->getInfo();
-                cout << endl;
-                win = false;
-            }
-            if (enemyArmy[1]) {
-                cout << "Enemy:" << endl;
-                enemyArmy[1]->getInfo();
-                cout << endl;
-                win = false;
-            }
-            if (enemyArmy[2]) {
-                cout << "Enemy:" << endl;
-                enemyArmy[2]->getInfo();
-                cout << endl;
-                win = false;
-            }
+    bool war() {
+        bool win = true;
+        bool lose = true;
+        static int step = 0;
+        m->showMap();
+        step++;
+        cout << endl << "STEP " << " " << step << endl;
+        if (myArmy[0]) {
+            myArmy[0]->takeOrders();
+            lose = false;
         }
-        if (win) cout << "YOU WIN!" << endl;
-        if (lose) cout << "YOU LOSE!" << endl;
+        if (myArmy[1]) {
+            myArmy[1]->takeOrders();
+            lose = false;
+        }
+        if (myArmy[2]) {
+            myArmy[2]->takeOrders();
+            lose = false;
+        }
+
+        healing();
+
+        if (enemyArmy[0]) {
+            cout << "Enemy:" << endl;
+            enemyArmy[0]->getInfo();
+            cout << endl;
+            win = false;
+        }
+        if (enemyArmy[1]) {
+            cout << "Enemy:" << endl;
+            enemyArmy[1]->getInfo();
+            cout << endl;
+            win = false;
+        }
+        if (enemyArmy[2]) {
+            cout << "Enemy:" << endl;
+            enemyArmy[2]->getInfo();
+            cout << endl;
+            win = false;
+        }
+        if (win) {cout << "YOU WIN!" << endl;return true;}
+        if (lose) {cout << "YOU LOSE!" << endl;return true;}
+        //if (step > 1) return true;
+        return false;
     }
 
     ~World() {
@@ -172,7 +173,10 @@ void check(vector<vector<IUnit*>> &mask) {
 
 void makeWorld() {
     World *world = new World();
-    world->war();
+    bool end = false;
+    while(!end) {
+        end = world->war();
+    }
     delete world;
 
 }

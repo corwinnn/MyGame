@@ -27,13 +27,7 @@ public:
         if (health <= 0)
             Death();
     }
-    void Death() {
-        cout << UnitName << " has dead.";
-        (*army)[id] = NULL;
-        (*mask)[x - 1][y - 1] = NULL;
-        map->map[x - 1][y - 1] = '.';
-        map->secret[x - 1][y - 1] = '*';
-    };
+
     void getInfo() const{
         cout << UnitName << endl;
         cout << "Health: " << health << endl;
@@ -141,6 +135,66 @@ public:
             }
         }
     }
+    void setPlace(int x, int y) {
+        this->x = x;
+        this->y = y;
+        if (!isEnemy)
+          map->map[x-1][y-1] = symbol;
+        map->secret[x-1][y-1] = symbol;
+        if (!isEnemy)
+          look();
+    }
+    char getSymbol() const{ return symbol;}
+    int getX() const {return x; }
+    int getY() const {return y; }
+    void healing(){
+        if (health != maxhealth)
+            cout << UnitName << " is healing." << endl;
+        health = min(maxhealth, health + _race->getBonusHealth());
+    }
+    int getHealth() {return health;}
+    int getMaxHealth(){return maxhealth;}
+    void setArmy(vector<IUnit*> *a) {
+        army = a;
+    }
+    void setMask(vector<vector<IUnit*>> *m) {
+        mask = m;
+    }
+    void setBMask(vector<vector<IBuilding*>> *bm) {
+        b_mask = bm;
+    }
+    int getAWL() const {return attackWeaponLevel;}
+    int getDWL() const {return defenceWeaponLevel;}
+    ~IUnit() {}
+
+protected:
+    IRace* _race;
+    vector<IUnit*> *army;
+    vector<vector<IUnit*>> *mask;
+    vector<vector<IBuilding*>> *b_mask;
+    string UnitName;
+    int move;
+    int defence;
+    int attack;
+    int attackDistance = 1;
+    int lookDistance;
+    int health;
+    int maxhealth;
+    int attackWeaponLevel = 0;
+    int defenceWeaponLevel = 0;
+    int x;
+    int y;
+    char symbol;
+    Map* map;
+    bool isEnemy;
+    int id;
+    void Death() {
+        cout << UnitName << " has dead.";
+        (*army)[id] = NULL;
+        (*mask)[x - 1][y - 1] = NULL;
+        map->map[x - 1][y - 1] = '.';
+        map->secret[x - 1][y - 1] = '*';
+    };
     void look(){
         int d = lookDistance + _race->getBonusLookDistance();
         int i0 = max(1, x - d);
@@ -166,63 +220,6 @@ public:
             if ((*army)[i] != this && (*army)[i])
                 (*army)[i]->look();
     }
-    void setPlace(int x, int y) {
-        this->x = x;
-        this->y = y;
-        if (!isEnemy)
-          map->map[x-1][y-1] = symbol;
-        map->secret[x-1][y-1] = symbol;
-        if (!isEnemy)
-          look();
-    }
-    char getSymbol() const{ return symbol;}
-    int getX() const {return x; }
-    int getY() const {return y; }
-    void healing(){
-        if (health != maxhealth)
-            cout << UnitName << " is healing." << endl;
-        health = min(maxhealth, health + _race->getBonusHealth());
-    }
-    void setArmy(vector<IUnit*> *a) {
-        army = a;
-    }
-    void setMask(vector<vector<IUnit*>> *m) {
-        mask = m;
-    }
-    void setBMask(vector<vector<IBuilding*>> *bm) {
-        b_mask = bm;
-    }
-    int getAWL() const {return attackWeaponLevel;}
-    int getDWL() const {return defenceWeaponLevel;}
-    ~IUnit() {
-        delete _race;
-        delete army;
-        delete mask;
-        delete b_mask;
-        delete map;
-    }
-
-protected:
-    IRace* _race;
-    vector<IUnit*> *army;
-    vector<vector<IUnit*>> *mask;
-    vector<vector<IBuilding*>> *b_mask;
-    string UnitName;
-    int move;
-    int defence;
-    int attack;
-    int attackDistance = 1;
-    int lookDistance;
-    int health;
-    int maxhealth;
-    int attackWeaponLevel = 0;
-    int defenceWeaponLevel = 0;
-    int x;
-    int y;
-    char symbol;
-    Map* map;
-    bool isEnemy;
-    int id;
 
 private:
     class Builder{
