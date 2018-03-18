@@ -449,7 +449,6 @@ public:
             return new Archer(race, m, ie);
         if (type == "Warrior")
             return new Warrior(race, m, ie);
-
     }
 };
 
