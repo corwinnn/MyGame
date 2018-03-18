@@ -7,17 +7,33 @@
 
 #include "Units.h"
 
+class GameMap {
+private:
+    static Map* m_instance;
+public:
+    GameMap() = delete;
+    ~GameMap() = delete;
+    GameMap(const GameMap&) = delete;
+    GameMap& operator=(const GameMap&) = delete;
+    static Map* instance() {
+        if (m_instance == nullptr)
+            m_instance = new Map();
+        return m_instance;
+    }
+};
+Map* GameMap::m_instance = nullptr;
+
 class World {
 public:
-    Map *m;
-    IRace* myRace;
-    IRace* enemyRace;
-    vector<vector<IUnit*>> mask;
-    vector<IUnit*> myArmy;
-    vector<IUnit*> enemyArmy;
 
     World(){
-        m = new Map();
+        m = GameMap::instance();
+        b_mask.resize(m->getSize());
+        for (int i = 0;i < b_mask.size();i++)
+            for (int j = 0; j < b_mask.size();j++)
+                b_mask[i].push_back(NULL);
+        b_mask[1][1] = new ChurchA(2, 2,m,2);
+        b_mask[2][2] = new ChurchD(3, 3, m, 3);
         myRace = new Humans();
         enemyRace = new Dwarfes();
         mask.resize(m->getSize());
@@ -25,9 +41,9 @@ public:
             for (int j = 0; j < mask.size();j++)
                 mask[i].push_back(NULL);
         enemyArmy.resize(3);
-        enemyArmy[0] = Factory::create("Spy", enemyRace, m, 1);
-        enemyArmy[1] = Factory::create("Archer", enemyRace, m, 1);
-        enemyArmy[2] = Factory::create("Warrior", enemyRace, m, 1);
+        enemyArmy[0] = Factory::create("Spy", enemyRace, m, true);
+        enemyArmy[1] = Factory::create("Archer", enemyRace, m, true);
+        enemyArmy[2] = Factory::create("Warrior", enemyRace, m, true);
         enemyArmy[0]->setArmy(&enemyArmy);
         enemyArmy[1]->setArmy(&enemyArmy);
         enemyArmy[2]->setArmy(&enemyArmy);
@@ -39,9 +55,9 @@ public:
         mask[4][24] = enemyArmy[2];
 
         myArmy.resize(3);
-        myArmy[0] = Factory::create("Spy", myRace, m, 0);
-        myArmy[1] = Factory::create("Archer", myRace, m, 0);
-        myArmy[2] = Factory::create("Warrior", myRace, m, 0);
+        myArmy[0] = Factory::create("Spy", myRace, m, false);
+        myArmy[1] = Factory::create("Archer", myRace, m, false);
+        myArmy[2] = Factory::create("Warrior", myRace, m, false);
         myArmy[0]->setArmy(&myArmy);
         myArmy[1]->setArmy(&myArmy);
         myArmy[2]->setArmy(&myArmy);
@@ -55,20 +71,26 @@ public:
         enemyArmy[0]->setMask(&mask);
         enemyArmy[1]->setMask(&mask);
         enemyArmy[2]->setMask(&mask);
+        enemyArmy[0]->setBMask(&b_mask);
+        enemyArmy[1]->setBMask(&b_mask);
+        enemyArmy[2]->setBMask(&b_mask);
         myArmy[0]->setMask(&mask);
         myArmy[1]->setMask(&mask);
         myArmy[2]->setMask(&mask);
+        myArmy[0]->setBMask(&b_mask);
+        myArmy[1]->setBMask(&b_mask);
+        myArmy[2]->setBMask(&b_mask);
 
     }
 
-    void healing() {
-        for (int i = 0; i < myArmy.size(); i++) {
-            if (myArmy[i])
-                myArmy[i]->healing();
+    void healing() const {
+        for (auto i : myArmy) {
+            if (i)
+                i->healing();
         }
-        for (int i = 0; i < myArmy.size(); i++) {
-            if (enemyArmy[i])
-                enemyArmy[i]->healing();
+        for (auto i : myArmy) {
+            if (i)
+                i->healing();
         }
     }
 
@@ -120,6 +142,25 @@ public:
         if (lose) cout << "YOU LOSE!" << endl;
     }
 
+    ~World() {
+        delete m;
+        delete myRace;
+        delete enemyRace;
+        for (auto &i : enemyArmy)
+            delete i;
+        for (auto &i : myArmy)
+            delete i;
+    }
+
+private:
+    Map *m;
+    IRace* myRace;
+    IRace* enemyRace;
+    vector<vector<IUnit*>> mask;
+    vector<vector<IBuilding*>> b_mask;
+    vector<IUnit*> myArmy;
+    vector<IUnit*> enemyArmy;
+
 };
 
 void check(vector<vector<IUnit*>> &mask) {
@@ -132,6 +173,7 @@ void check(vector<vector<IUnit*>> &mask) {
 void makeWorld() {
     World *world = new World();
     world->war();
+    delete world;
 
 }
 

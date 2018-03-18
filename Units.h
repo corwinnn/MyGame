@@ -7,14 +7,15 @@
 
 #include "Race.h"
 #include "Map.h"
+#include "Buildings.h"
 
 class IUnit {
 public:
-    IUnit() {}
+    IUnit() = default;
+
     IUnit(IRace* r, Map* map) {}
     virtual void Move(int &mp)=0;
     virtual void Damage(int &move, int x, int y)=0;
-
     void TakeDamage(int damage) {
         damage -=  defence + _race->getBonusDefence() + defenceWeaponLevel*5;
         if (damage <= 0)
@@ -33,14 +34,14 @@ public:
         map->map[x - 1][y - 1] = '.';
         map->secret[x - 1][y - 1] = '*';
     };
-    void getInfo() {
+    void getInfo() const{
         cout << UnitName << endl;
         cout << "Health: " << health << endl;
-        cout << "Attack: " << attack + _race->getBonusAttack();
+        cout << "Attack: " << attack + _race->getBonusAttack() + getAWL()*5;
         (attackDistance > 1) ? cout << " Attack Distance: " << attackDistance << endl:cout << endl;
-        cout << "Defence: " << defence + _race->getBonusDefence() << endl;
+        cout << "Defence: " << defence + _race->getBonusDefence() + getDWL()* 5 << endl;
     }
-    string getName() { return UnitName; }
+    string getName() const { return UnitName; }
     void takeOrders() {
         int movepoints = move + _race->getBonusMove();
         while (movepoints) {
@@ -65,8 +66,79 @@ public:
             }
             if (choice == '2')
                 Move(movepoints);
-            if (choice == '3')
-                break;
+            if (choice == '3') {
+                int tx = -1;
+                int ty = -1;
+                if (x > 1 && map->map[x - 2][y - 1] == '+') {
+                    tx = x - 2;
+                    ty = y - 1;
+                }
+                if (tx != -1) {
+                    if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
+                        Builder *b = new Builder(this);
+                        b->buildAttack((*b_mask)[tx][ty]->getPower());
+                        delete b;
+                    }
+                    if ((*b_mask)[tx][ty]->getPurpose() == "Defence") {
+                        Builder *b = new Builder(this);
+                        b->buildDefence((*b_mask)[tx][ty]->getPower());
+                        delete b;
+                    }
+                    tx = -1;
+                }
+                if (y > 1 && map->map[x - 1][y - 2] == '+') {
+                    tx = x - 1;
+                    ty = y - 2;
+                }
+                if (tx != -1) {
+                    if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
+                        Builder *b = new Builder(this);
+                        b->buildAttack((*b_mask)[tx][ty]->getPower());
+                        delete b;
+                    }
+                    if ((*b_mask)[tx][ty]->getPurpose() == "Defence") {
+                        Builder *b = new Builder(this);
+                        b->buildDefence((*b_mask)[tx][ty]->getPower());
+                        delete b;
+                    }
+                    tx = -1;
+                }
+                if (y < map->getSize() && map->map[x - 1][y] == '+') {
+                    tx = x - 1;
+                    ty = y;
+                }
+                if (tx != -1) {
+                    if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
+                        Builder *b = new Builder(this);
+                        b->buildAttack((*b_mask)[tx][ty]->getPower());
+                        delete b;
+                    }
+                    if ((*b_mask)[tx][ty]->getPurpose() == "Defence") {
+                        Builder *b = new Builder(this);
+                        b->buildDefence((*b_mask)[tx][ty]->getPower());
+                        delete b;
+                    }
+                    tx = -1;
+                }
+                if (y < map->getSize() && map->map[x][y - 1] == '+') {
+                    tx = x;
+                    ty = y - 1;
+                }
+                if (tx != -1) {
+                    if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
+                        Builder *b = new Builder(this);
+                        b->buildAttack((*b_mask)[tx][ty]->getPower());
+                        delete b;
+                    }
+                    if ((*b_mask)[tx][ty]->getPurpose() == "Defence") {
+                        Builder *b = new Builder(this);
+                        b->buildDefence((*b_mask)[tx][ty]->getPower());
+                        delete b;
+                    }
+                    tx = -1;
+                }
+               break;
+            }
         }
     }
     void look(){
@@ -103,9 +175,9 @@ public:
         if (!isEnemy)
           look();
     }
-    char getSymbol() { return symbol; }
-    int getX() {return x; }
-    int getY() {return y; }
+    char getSymbol() const{ return symbol;}
+    int getX() const {return x; }
+    int getY() const {return y; }
     void healing(){
         if (health != maxhealth)
             cout << UnitName << " is healing." << endl;
@@ -117,11 +189,24 @@ public:
     void setMask(vector<vector<IUnit*>> *m) {
         mask = m;
     }
+    void setBMask(vector<vector<IBuilding*>> *bm) {
+        b_mask = bm;
+    }
+    int getAWL() const {return attackWeaponLevel;}
+    int getDWL() const {return defenceWeaponLevel;}
+    ~IUnit() {
+        delete _race;
+        delete army;
+        delete mask;
+        delete b_mask;
+        delete map;
+    }
 
 protected:
     IRace* _race;
     vector<IUnit*> *army;
     vector<vector<IUnit*>> *mask;
+    vector<vector<IBuilding*>> *b_mask;
     string UnitName;
     int move;
     int defence;
@@ -138,6 +223,18 @@ protected:
     Map* map;
     bool isEnemy;
     int id;
+
+private:
+    class Builder{
+    public:
+        explicit Builder(IUnit* unit) {
+            this->unit = unit;
+        }
+        void buildAttack(int x) {unit->attackWeaponLevel = x;}
+        void buildDefence(int x) {unit->defenceWeaponLevel = x;}
+    private:
+        IUnit* unit;
+    };
 };
 
 class Warrior : public IUnit {
@@ -187,7 +284,7 @@ public:
         mp = 0;
     }
 
-    void Damage(int &move, int cx, int cy) {
+    void Damage(int &move, int cx, int cy) override {
         Move(move);
         if (abs(x - cx) + abs(y - cy) == 1) {
             (*mask)[cx - 1][cy - 1]->TakeDamage(attack + _race->getBonusAttack() + attackWeaponLevel * 5);
@@ -330,7 +427,7 @@ public:
         }
     }
 
-    void Damage(int &move, int cx, int cy) {
+    void Damage(int &move, int cx, int cy) override {
         move -= 2;
         if (move > 0) {
             Move(move);
@@ -342,7 +439,6 @@ public:
             TakeDamage(45);
         map->showMap();
     }
-
 
 
 };
