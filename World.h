@@ -151,6 +151,11 @@ public:
             delete i;
         for (auto &i : myArmy)
             delete i;
+        for (int i = 0; i < mask.size();i++)
+            for (int j = 0; j < mask.size();j++) {
+                if (b_mask[i][j])
+                   delete b_mask[i][j];
+            }
     }
 
 private:
@@ -178,7 +183,6 @@ void makeWorld() {
         end = world->war();
     }
     delete world;
-
 }
 
 

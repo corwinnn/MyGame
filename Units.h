@@ -44,7 +44,7 @@ public:
             cout << "Listen to your orders!" << endl;
             cout << "1)Attack" << endl;
             cout << "2)Move" << endl;
-            cout << "3)Nothing" << endl << endl;
+            cout << "3)Nothing" << endl;
             char choice = '3';
             cin >> choice;
             if (choice == '1') {
@@ -133,6 +133,10 @@ public:
                 }
                break;
             }
+            if (choice == '4'){
+                Death();
+                break;
+            }
         }
     }
     void setPlace(int x, int y) {
@@ -189,11 +193,12 @@ protected:
     bool isEnemy;
     int id;
     void Death() {
-        cout << UnitName << " has dead.";
+        cout << UnitName << " has dead." << endl;
         (*army)[id] = NULL;
         (*mask)[x - 1][y - 1] = NULL;
         map->map[x - 1][y - 1] = '.';
         map->secret[x - 1][y - 1] = '*';
+        delete this;
     };
     void look(){
         int d = lookDistance + _race->getBonusLookDistance();
@@ -372,7 +377,7 @@ public:
         UnitName = _race->getNameSpy();
         move = 8;
         defence = 20;
-        attack = 90;
+        attack = 1090;
         lookDistance = 7;
         health = 300;
         maxhealth = 300;

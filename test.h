@@ -17,6 +17,7 @@ TEST(Race, names) {
     EXPECT_EQ("Spy_Human", s2);
     EXPECT_EQ("War_Human", s4);
     EXPECT_EQ("Human_Archer", s3);
+    delete r;
 }
 
 TEST(Race, bonuses) {
@@ -33,6 +34,7 @@ TEST(Race, bonuses) {
     EXPECT_LT(b4,10);
     EXPECT_LT(b5,10);
     EXPECT_LT(b6,10);
+    delete r;
 }
 
 TEST(Map, size) {
@@ -40,6 +42,7 @@ TEST(Map, size) {
     int size = map->getSize();
     EXPECT_LE(size, 60);
     EXPECT_GE(size, 10);
+    delete map;
 }
 
 TEST(Map, init) {
@@ -49,6 +52,7 @@ TEST(Map, init) {
             EXPECT_EQ('*', map->map[i][j]);
             EXPECT_EQ('*', map->secret[i][j]);
         }
+    delete map;
 }
 
 TEST(IUnit, get) {
@@ -68,6 +72,7 @@ TEST(IUnit, get) {
     EXPECT_EQ(a2, 0);
     EXPECT_EQ(a3, 5);
     EXPECT_EQ(a4, 5);
+    delete u;
     delete m;
     delete r;
 }
@@ -94,10 +99,14 @@ TEST(IUnit, play) {
     World *world = new World();
     bool end = false;
     while(!end) {
-        EXPECT_LE(world->getMyUnit(0)->getX(), 60);
-        EXPECT_GE(world->getMyUnit(0)->getX(), 1);
-        EXPECT_LE(world->getMyUnit(0)->getY(), 60);
-        EXPECT_GE(world->getMyUnit(0)->getY(), 1);
+        if (world->getMyUnit(0))
+           EXPECT_LE(world->getMyUnit(0)->getX(), 60);
+        if (world->getMyUnit(0))
+           EXPECT_GE(world->getMyUnit(0)->getX(), 1);
+        if (world->getMyUnit(0))
+           EXPECT_LE(world->getMyUnit(0)->getY(), 60);
+        if (world->getMyUnit(0))
+           EXPECT_GE(world->getMyUnit(0)->getY(), 1);
         end = world->war();
     }
     delete world;
