@@ -10,7 +10,7 @@
 using namespace std;
 class IRace {
 public:
-    IRace(){}
+    IRace() = default;
 
     string getNameRace() {return nameRace; }
     string getNameArcher() {return nameArcher; }
@@ -20,7 +20,7 @@ public:
     int getBonusAttack() {return bonusAttack; }
     int getBonusDefence() {return bonusDefence; }
     int getBonusArcherDistance() {return bonusArcherDistance; }
-    int getBonusLookDistance() {return bonuslookDistance; }
+    int getBonusLookDistance() {return bonusLookDistance; }
     int getBonusHealth() { return bonusHealth; }
 
     virtual void superAction()=0;
@@ -34,7 +34,7 @@ protected:
     int bonusAttack;
     int bonusDefence;
     int bonusArcherDistance;
-    int bonuslookDistance;
+    int bonusLookDistance;
     int bonusHealth;
 };
 
@@ -49,7 +49,7 @@ public:
         bonusAttack = 5;
         bonusDefence = 5;
         bonusArcherDistance = -1;
-        bonuslookDistance = 1;
+        bonusLookDistance = 1;
         bonusHealth = 10;
     }
 
@@ -67,7 +67,7 @@ public:
         bonusAttack = 0;
         bonusDefence = 0;
         bonusArcherDistance = 0;
-        bonuslookDistance = 0;
+        bonusLookDistance = 0;
         bonusHealth = 0;
     }
 
@@ -85,7 +85,7 @@ public:
         bonusAttack = 0;
         bonusDefence = 0;
         bonusArcherDistance = 0;
-        bonuslookDistance = -1;
+        bonusLookDistance = -1;
         bonusHealth = 10;
     }
 
