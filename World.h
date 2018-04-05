@@ -41,12 +41,13 @@ public:
             for (int j = 0; j < mask.size();j++)
                 mask[i].push_back(NULL);
         enemyArmy.resize(3);
-        enemyArmy[0] = Factory::create("Spy", enemyRace, m, true);
-        enemyArmy[1] = Factory::create("Archer", enemyRace, m, true);
-        enemyArmy[2] = Factory::create("Warrior", enemyRace, m, true);
-        enemyArmy[0]->setArmy(&enemyArmy);
-        enemyArmy[1]->setArmy(&enemyArmy);
-        enemyArmy[2]->setArmy(&enemyArmy);
+        string types[] = {"Spy", "Archer", "Warrior"};
+        for (int i = 0; i < 3; i++) {
+            enemyArmy[i] = Factory::create(types[i], enemyRace, m, true);
+        }
+        for (int i = 0; i < 3; i++) {
+            enemyArmy[i]->setArmy(&enemyArmy);
+        }
         enemyArmy[0]->setPlace(15, 13);
         enemyArmy[1]->setPlace(25, 4);
         enemyArmy[2]->setPlace(5, 25);
@@ -55,32 +56,24 @@ public:
         mask[4][24] = enemyArmy[2];
 
         myArmy.resize(3);
-        myArmy[0] = Factory::create("Spy", myRace, m, false);
-        myArmy[1] = Factory::create("Archer", myRace, m, false);
-        myArmy[2] = Factory::create("Warrior", myRace, m, false);
-        myArmy[0]->setArmy(&myArmy);
-        myArmy[1]->setArmy(&myArmy);
-        myArmy[2]->setArmy(&myArmy);
+        for (int i = 0; i < 3; i++) {
+            myArmy[i] = Factory::create(types[i], myRace, m, false);
+        }
+        for (int i = 0; i < 3; i++) {
+            myArmy[i]->setArmy(&myArmy);
+        }
         myArmy[0]->setPlace(1, 3);
         myArmy[1]->setPlace(1, 2);
         myArmy[2]->setPlace(1, 1);
         mask[0][2] = myArmy[0];
         mask[0][1] = myArmy[1];
         mask[0][0] = myArmy[2];
-
-        enemyArmy[0]->setMask(&mask);
-        enemyArmy[1]->setMask(&mask);
-        enemyArmy[2]->setMask(&mask);
-        enemyArmy[0]->setBMask(&b_mask);
-        enemyArmy[1]->setBMask(&b_mask);
-        enemyArmy[2]->setBMask(&b_mask);
-        myArmy[0]->setMask(&mask);
-        myArmy[1]->setMask(&mask);
-        myArmy[2]->setMask(&mask);
-        myArmy[0]->setBMask(&b_mask);
-        myArmy[1]->setBMask(&b_mask);
-        myArmy[2]->setBMask(&b_mask);
-
+        for (int i = 0; i < 3; i++) {
+            enemyArmy[i]->setMask(&mask);
+            enemyArmy[i]->setBMask(&b_mask);
+            myArmy[i]->setMask(&mask);
+            myArmy[i]->setBMask(&b_mask);
+        }
     }
 
     CUnit* getMyUnit (int n) const{
