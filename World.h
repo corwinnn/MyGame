@@ -83,7 +83,7 @@ public:
 
     }
 
-    IUnit* getMyUnit(int n){
+    CUnit* getMyUnit(int n){
         return myArmy[n];
     }
     void healing() const {
@@ -162,14 +162,14 @@ private:
     Map *m;
     IRace* myRace;
     IRace* enemyRace;
-    vector<vector<IUnit*>> mask;
+    vector<vector<CUnit*>> mask;
     vector<vector<IBuilding*>> b_mask;
-    vector<IUnit*> myArmy;
-    vector<IUnit*> enemyArmy;
+    vector<CUnit*> myArmy;
+    vector<CUnit*> enemyArmy;
 
 };
 
-void check(vector<vector<IUnit*>> &mask) {
+void check(vector<vector<CUnit*>> &mask) {
     for (int i = 0; i < 10; i++)
         for (int j = 0; j < 10;j++)
             if (mask[i][j])

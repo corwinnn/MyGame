@@ -55,10 +55,10 @@ TEST(Map, init) {
     delete map;
 }
 
-TEST(IUnit, get) {
+TEST(CUnit, get) {
     Map* m = new Map();
     IRace* r = new Dwarfes();
-    IUnit *u = Factory::create("Warrior", r, m, false);
+    CUnit *u = Factory::create("Warrior", r, m, false);
     string s1 = u->getName();
     char c1 = u->getSymbol();
     int a1 = u->getDWL();
@@ -77,10 +77,10 @@ TEST(IUnit, get) {
     delete r;
 }
 
-TEST(IUnit, heal) {
+TEST(CUnit, heal) {
     Map* m = new Map();
     IRace* r = new Dwarfes();
-    IUnit *u = Factory::create("Warrior", r, m, false);
+    CUnit *u = Factory::create("Warrior", r, m, false);
     string s1 = u->getName();
     char c1 = u->getSymbol();
     int a1 = u->getDWL();
@@ -95,7 +95,7 @@ TEST(IUnit, heal) {
     delete u;
 }
 
-TEST(IUnit, play) {
+TEST(CUnit, play) {
     World *world = new World();
     bool end = false;
     while(!end) {

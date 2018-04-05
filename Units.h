@@ -11,11 +11,11 @@
 using std::cin;
 using std::min;
 using std::max;
-class IUnit {
+class CUnit {
 public:
-    IUnit() = default;
+    CUnit() = default;
 
-    IUnit(IRace* r, Map* map) {}
+    CUnit(IRace* r, Map* map) {}
     virtual void Move(int &mp)=0;
     virtual void Damage(int &move, int x, int y)=0;
     void TakeDamage(int damage) {
@@ -160,10 +160,10 @@ public:
     }
     int getHealth() {return health;}
     int getMaxHealth(){return maxhealth;}
-    void setArmy(vector<IUnit*> *a) {
+    void setArmy(vector<CUnit*> *a) {
         army = a;
     }
-    void setMask(vector<vector<IUnit*>> *m) {
+    void setMask(vector<vector<CUnit*>> *m) {
         mask = m;
     }
     void setBMask(vector<vector<IBuilding*>> *bm) {
@@ -171,12 +171,12 @@ public:
     }
     int getAWL() const {return attackWeaponLevel;}
     int getDWL() const {return defenceWeaponLevel;}
-    ~IUnit() {}
+    ~CUnit() {}
 
 protected:
     IRace* _race;
-    vector<IUnit*> *army;
-    vector<vector<IUnit*>> *mask;
+    vector<CUnit*> *army;
+    vector<vector<CUnit*>> *mask;
     vector<vector<IBuilding*>> *b_mask;
     string UnitName;
     int move;
@@ -231,17 +231,17 @@ protected:
 private:
     class Builder{
     public:
-        explicit Builder(IUnit* unit) {
+        explicit Builder(CUnit* unit) {
             this->unit = unit;
         }
         void buildAttack(int x) {unit->attackWeaponLevel = x;}
         void buildDefence(int x) {unit->defenceWeaponLevel = x;}
     private:
-        IUnit* unit;
+        CUnit* unit;
     };
 };
 
-class Warrior : public IUnit {
+class Warrior : public CUnit {
 public:
     Warrior() {}
     Warrior(IRace* race, Map* m, bool ie) {
@@ -302,7 +302,7 @@ public:
 
 };
 
-class Archer : public IUnit {
+class Archer : public CUnit {
 public:
     Archer() {}
     Archer(IRace* race, Map* m, bool ie) {
@@ -370,7 +370,7 @@ public:
 
 };
 
-class Spy : public IUnit {
+class Spy : public CUnit {
 public:
     Spy() {}
     Spy(IRace* race, Map* m, bool ie) {
@@ -449,7 +449,7 @@ public:
 
 class Factory {
 public:
-    static IUnit* create(string type, IRace* race, Map* m, bool ie) {
+    static CUnit* create(string type, IRace* race, Map* m, bool ie) {
         if (type == "Spy")
             return new Spy(race, m, ie);
         if (type == "Archer")
