@@ -31,7 +31,7 @@ public:
 
 
 
-    void showMap() {
+    void showMap() const{
         cout << endl;
         for (int i = 0; i <= 9; i++) {
             cout << i << "  ";
@@ -56,7 +56,7 @@ public:
         cout << endl;
     }
 
-    int getSize(){ return size; }
+    int getSize() const { return size; }
 private:
     int size = 30;
 

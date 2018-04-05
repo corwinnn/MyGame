@@ -35,7 +35,7 @@ public:
         cout << "Health: " << health << endl;
         cout << "Attack: " << attack + _race->getBonusAttack() + getAWL()*5;
         (attackDistance > 1) ? cout << " Attack Distance: " << attackDistance << endl:cout << endl;
-        cout << "Defence: " << defence + _race->getBonusDefence() + getDWL()* 5 << endl;
+        cout << "Defence: " << defence + _race->getBonusDefence() + getDWL()* powerWeaponLevel << endl;
     }
     string getName() const { return UnitName; }
     void takeOrders() {
@@ -158,8 +158,8 @@ public:
             cout << UnitName << " is healing." << endl;
         health = min(maxhealth, health + _race->getBonusHealth());
     }
-    int getHealth() {return health;}
-    int getMaxHealth(){return maxhealth;}
+    int getHealth() const {return health;}
+    int getMaxHealth() const {return maxhealth;}
     void setArmy(vector<CUnit*> *a) {
         army = a;
     }
@@ -194,6 +194,7 @@ protected:
     Map* map;
     bool isEnemy;
     int id;
+    int powerWeaponLevel = 5;
     void Death() {
         cout << UnitName << " has dead." << endl;
         (*army)[id] = NULL;
@@ -291,7 +292,7 @@ public:
     void Damage(int &move, int cx, int cy) override {
         Move(move);
         if (abs(x - cx) + abs(y - cy) == 1) {
-            (*mask)[cx - 1][cy - 1]->TakeDamage(attack + _race->getBonusAttack() + attackWeaponLevel * 5);
+            (*mask)[cx - 1][cy - 1]->TakeDamage(attack + _race->getBonusAttack() + attackWeaponLevel * powerWeaponLevel);
         }
         else {
             cout << "Sorry, it was a mistake!" << endl;

@@ -14,16 +14,16 @@ class IRace {
 public:
     IRace() = default;
 
-    string getNameRace() {return nameRace; }
-    string getNameArcher() {return nameArcher; }
-    string getNameWarrior() {return nameWarrior; }
-    string getNameSpy() {return nameSpy; }
-    int getBonusMove() {return bonusMove; }
-    int getBonusAttack() {return bonusAttack; }
-    int getBonusDefence() {return bonusDefence; }
-    int getBonusArcherDistance() {return bonusArcherDistance; }
-    int getBonusLookDistance() {return bonusLookDistance; }
-    int getBonusHealth() { return bonusHealth; }
+    string getNameRace() const {return nameRace; }
+    string getNameArcher() const {return nameArcher; }
+    string getNameWarrior() const  {return nameWarrior; }
+    string getNameSpy() const  {return nameSpy; }
+    int getBonusMove() const {return bonusMove; }
+    int getBonusAttack() const  {return bonusAttack; }
+    int getBonusDefence() const  {return bonusDefence; }
+    int getBonusArcherDistance() const  {return bonusArcherDistance; }
+    int getBonusLookDistance() const  {return bonusLookDistance; }
+    int getBonusHealth() const { return bonusHealth; }
 
     virtual void superAction()=0;
 

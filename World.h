@@ -83,7 +83,7 @@ public:
 
     }
 
-    CUnit* getMyUnit(int n){
+    CUnit* getMyUnit (int n) const{
         return myArmy[n];
     }
     void healing() const {
