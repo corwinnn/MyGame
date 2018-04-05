@@ -7,8 +7,10 @@
 
 #include <iostream>
 #include <vector>
-using namespace std;
-
+using std::vector;
+using std::string;
+using std::cout;
+using std::endl;
 class Map {
 public:
     string base;

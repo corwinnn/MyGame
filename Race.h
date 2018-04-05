@@ -5,9 +5,11 @@
 #ifndef MYGAME_RACE_H
 #define MYGAME_RACE_H
 
-#include <iostream>
+#include <bits/stdc++.h>
 
-using namespace std;
+using std::vector;
+using std::string;
+using std::cout;
 class IRace {
 public:
     IRace() = default;

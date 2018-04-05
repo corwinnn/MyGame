@@ -8,7 +8,9 @@
 #include "Race.h"
 #include "Map.h"
 #include "Buildings.h"
-
+using std::cin;
+using std::min;
+using std::max;
 class IUnit {
 public:
     IUnit() = default;
