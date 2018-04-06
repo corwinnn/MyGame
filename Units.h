@@ -11,6 +11,45 @@
 using std::cin;
 using std::min;
 using std::max;
+class Writer {
+public:
+    static void wChoise(int movepoints) {
+        cout << "Movepoints: " << movepoints << endl << endl;
+        cout << "Listen to your orders!" << endl;
+        cout << "1)Attack" << endl;
+        cout << "2)Move" << endl;
+        cout << "3)Nothing" << endl;
+    }
+    static void wTakeCoordinates() {
+        cout << "Say the coordinares, my Lord!" << endl;
+    }
+    static void wWrongInfo() {
+        cout << "Wrong Information!" << endl << endl;
+    }
+
+    static void wDeath(string& UnitName) {
+        cout << UnitName << " has dead." << endl;
+    }
+    static void wDamage(string& UnitName, int damage) {
+        cout << UnitName << " " << "lost " << damage << " hp." << endl;
+    }
+    static void wHealing(string& UnitName) {
+        cout << UnitName << " is healing." << endl;
+    }
+    static void wMoveInfoWarriorArcher() {
+        cout << "Say the string of moving includes 'u','d','r','l': ";
+    }
+    static void wMistake() {
+        cout << "Sorry, it was a mistake!" << endl;
+    }
+    static void wMoveInfoSpy() {
+        cout << "Say the strings of moving includes 'u','d','r','l' with '!' after the last: ";
+    }
+    static void wLine() {
+        cout << endl << endl;
+    }
+    
+};
 class CUnit {
 public:
     CUnit() = default;
@@ -25,7 +64,7 @@ public:
         if (damage > health)
             damage = health;
         if (damage) health -= damage;
-        cout << UnitName << " " << "lost " << damage << " hp." << endl;
+        Writer::wDamage(UnitName, damage);
         if (health <= 0)
             Death();
     }
@@ -42,21 +81,17 @@ public:
         int movepoints = move + _race->getBonusMove();
         while (movepoints) {
             getInfo();
-            cout << "Movepoints: " << movepoints << endl << endl;
-            cout << "Listen to your orders!" << endl;
-            cout << "1)Attack" << endl;
-            cout << "2)Move" << endl;
-            cout << "3)Nothing" << endl;
+            Writer::wChoise(movepoints);
             char choice = '3';
             cin >> choice;
             if (choice == '1') {
-                cout << "Say the coordinares, my Lord!" << endl;
+                Writer::wTakeCoordinates();
                 int cx, cy;
                 cin >> cx >> cy;
                 if ((*mask)[cx - 1][cy - 1])
                    Damage(movepoints, cx, cy);
                 else {
-                    cout << "Wrong Information!" << endl << endl;
+                    Writer::wWrongInfo();
                     break;
                 }
             }
@@ -155,7 +190,7 @@ public:
     int getY() const {return y; }
     void healing(){
         if (health != maxhealth)
-            cout << UnitName << " is healing." << endl;
+            Writer::wHealing(UnitName);
         health = min(maxhealth, health + _race->getBonusHealth());
     }
     int getHealth() const {return health;}
@@ -196,7 +231,7 @@ protected:
     int id;
     int powerWeaponLevel = 5;
     void Death() {
-        cout << UnitName << " has dead." << endl;
+        Writer::wDeath(UnitName);
         (*army)[id] = NULL;
         (*mask)[x - 1][y - 1] = NULL;
         map->map[x - 1][y - 1] = '.';
@@ -262,7 +297,7 @@ public:
             symbol += 'A' - 'a';
     }
     void Move(int &mp) override {
-        cout << "Say the string of moving includes 'u','d','r','l': ";
+        Writer::wMoveInfoWarriorArcher();
         string s;
         cin >> s;
         if (s.length() > mp)
@@ -295,7 +330,7 @@ public:
             (*mask)[cx - 1][cy - 1]->TakeDamage(attack + _race->getBonusAttack() + attackWeaponLevel * powerWeaponLevel);
         }
         else {
-            cout << "Sorry, it was a mistake!" << endl;
+            Writer::wMistake();
             TakeDamage(45);
         }
         map->showMap();
@@ -324,7 +359,7 @@ public:
             symbol += 'A' - 'a';
     }
     void Move(int &mp) override {
-        cout << "Say the string of moving includes 'u','d','r','l': ";
+        Writer::wMoveInfoWarriorArcher();
         string s;
         cin >> s;
         if (s.length() > mp)
@@ -353,7 +388,7 @@ public:
 
     void Damage(int &move, int cx, int cy) override {
         if (move < 3) {
-            cout << "Sorry, it was a mistake!" << endl;
+            Writer::wMistake();
             return;
         }
 
@@ -361,7 +396,7 @@ public:
             (*mask)[cx - 1][cy - 1]->TakeDamage(attack + _race->getBonusAttack() + attackWeaponLevel * 5);
         }
         else {
-            cout << "Sorry, it was a mistake!" << endl;
+            Writer::wMistake();
             TakeDamage(45);
         }
         move = max(0, move - 3);
@@ -391,7 +426,7 @@ public:
             symbol += 'A' - 'a';
     }
     void Move(int &mp) override {
-        cout << "Say the strings of moving includes 'u','d','r','l' with '!' after the last: ";
+        Writer::wMoveInfoSpy();
         int d = mp;
         map->map[x-1][y-1] = '*';
         char t;
@@ -426,7 +461,7 @@ public:
             }
             j++;
             if (j == s.length() || i == d - 1) {
-                cout << endl << endl;
+                Writer::wLine();
                 map->showMap();
             }
         }
