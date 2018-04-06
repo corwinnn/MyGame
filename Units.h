@@ -100,77 +100,13 @@ public:
             if (choice == '3') {
                 int tx = -1;
                 int ty = -1;
-                if (x > 1 && map->map[x - 2][y - 1] == '+') {
-                    tx = x - 2;
-                    ty = y - 1;
-                }
-                if (tx != -1) {
-                    if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
-                        Builder *b = new Builder(this);
-                        b->buildAttack((*b_mask)[tx][ty]->getPower());
-                        delete b;
-                    }
-                    if ((*b_mask)[tx][ty]->getPurpose() == "Defence") {
-                        Builder *b = new Builder(this);
-                        b->buildDefence((*b_mask)[tx][ty]->getPower());
-                        delete b;
-                    }
-                    tx = -1;
-                }
-                if (y > 1 && map->map[x - 1][y - 2] == '+') {
-                    tx = x - 1;
-                    ty = y - 2;
-                }
-                if (tx != -1) {
-                    if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
-                        Builder *b = new Builder(this);
-                        b->buildAttack((*b_mask)[tx][ty]->getPower());
-                        delete b;
-                    }
-                    if ((*b_mask)[tx][ty]->getPurpose() == "Defence") {
-                        Builder *b = new Builder(this);
-                        b->buildDefence((*b_mask)[tx][ty]->getPower());
-                        delete b;
-                    }
-                    tx = -1;
-                }
-                if (y < map->getSize() && map->map[x - 1][y] == '+') {
-                    tx = x - 1;
-                    ty = y;
-                }
-                if (tx != -1) {
-                    if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
-                        Builder *b = new Builder(this);
-                        b->buildAttack((*b_mask)[tx][ty]->getPower());
-                        delete b;
-                    }
-                    if ((*b_mask)[tx][ty]->getPurpose() == "Defence") {
-                        Builder *b = new Builder(this);
-                        b->buildDefence((*b_mask)[tx][ty]->getPower());
-                        delete b;
-                    }
-                    tx = -1;
-                }
-                if (y < map->getSize() && map->map[x][y - 1] == '+') {
-                    tx = x;
-                    ty = y - 1;
-                }
-                if (tx != -1) {
-                    if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
-                        Builder *b = new Builder(this);
-                        b->buildAttack((*b_mask)[tx][ty]->getPower());
-                        delete b;
-                    }
-                    if ((*b_mask)[tx][ty]->getPurpose() == "Defence") {
-                        Builder *b = new Builder(this);
-                        b->buildDefence((*b_mask)[tx][ty]->getPower());
-                        delete b;
-                    }
-                    tx = -1;
-                }
+                findChurche(x - 2, y - 1);
+                findChurche(x - 1, y - 2);
+                findChurche(x - 1, y);
+                findChurche(x, y - 1);
                break;
             }
-            if (choice == '4'){
+            if (choice == '#'){
                 Death();
                 break;
             }
@@ -238,6 +174,23 @@ protected:
         map->secret[x - 1][y - 1] = '*';
         delete this;
     };
+    void churchEffect(int tx, int ty) {
+        if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
+            Builder *b = new Builder(this);
+            b->buildAttack((*b_mask)[tx][ty]->getPower());
+            delete b;
+        }
+        if ((*b_mask)[tx][ty]->getPurpose() == "Defence") {
+            Builder *b = new Builder(this);
+            b->buildDefence((*b_mask)[tx][ty]->getPower());
+            delete b;
+        }
+    }
+    void findChurche(int x, int y) {
+        if (y < map->getSize() && y >= 0 && x < map->getSize() && x >=0 && map->map[x][y] == '+') {
+            churchEffect(x, y);
+        }
+    }
     void look(){
         int d = lookDistance + _race->getBonusLookDistance();
         int i0 = max(1, x - d);
