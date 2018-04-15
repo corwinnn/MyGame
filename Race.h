@@ -10,6 +10,9 @@
 using std::vector;
 using std::string;
 using std::cout;
+/**
+ * \brief Interface of races
+ */
 class IRace {
 public:
     IRace() = default;

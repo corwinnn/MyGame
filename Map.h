@@ -11,11 +11,25 @@ using std::vector;
 using std::string;
 using std::cout;
 using std::endl;
+/**
+ * \brief Map text image
+ *
+ * Map is showing like number of symbols.
+ * - <b>*</b> - unknown place
+ * - <b>.</b> - place in your area of visibility
+ * - <b>A - Z</b> - your units
+ * - <b>a - z</b> - enemy units
+ * - <b>+</b> - church
+ *
+ */
 class Map {
 public:
     string base;
     vector<string> map;
     vector<string> secret;
+    /**
+     * initialize map with '*'
+     */
     Map() {
         map.resize(size);
         secret.resize(size);
@@ -30,7 +44,9 @@ public:
     }
 
 
-
+    /**
+     * show the map
+     */
     void showMap() const{
         cout << endl;
         for (int i = 0; i <= 9; i++) {
@@ -55,7 +71,10 @@ public:
         cout << endl;
         cout << endl;
     }
-
+    /**
+     *
+     * @return map's size
+     */
     int getSize() const { return size; }
 private:
     int size = 30;

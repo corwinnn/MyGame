@@ -6,7 +6,9 @@
 #define MYGAME_WORLD_H
 
 #include "Units.h"
-
+/**
+ * \brief Singleton class. Makes gamemap.
+ */
 class GameMap {
 private:
     static Map* m_instance;
@@ -22,10 +24,14 @@ public:
     }
 };
 Map* GameMap::m_instance = nullptr;
-
+/**
+ * \brief Makes the gameworld. Initializes maps with objects.
+ */
 class World {
 public:
-
+    /**
+     * Initializing
+     */
     World(){
         m = GameMap::instance();
         b_mask.resize(m->getSize());
@@ -33,7 +39,7 @@ public:
             for (int j = 0; j < b_mask.size();j++)
                 b_mask[i].push_back(NULL);
         b_mask[1][1] = new ChurchA(2, 2,m,2);
-        b_mask[2][2] = new ChurchD(3, 3, m, 3);
+        b_mask[m->getSize() - 3][m->getSize() - 3] = new ChurchD(m->getSize() - 2, m->getSize() - 23, m, 3);
         myRace = new Humans();
         enemyRace = new Dwarfes();
         mask.resize(m->getSize());
@@ -75,10 +81,17 @@ public:
             myArmy[i]->setBMask(&b_mask);
         }
     }
-
+    /**
+     *
+     * @param n unit's number
+     * @return unit
+     */
     CUnit* getMyUnit (int n) const{
         return myArmy[n];
     }
+    /**
+     * Heal alive units
+     */
     void healing() const {
         for (auto i : myArmy) {
             if (i)
@@ -89,7 +102,10 @@ public:
                 i->healing();
         }
     }
-
+    /**
+     * One step of the game. Every alive unit takes orders. If there nobody alive, game ends.
+     * @return is the game ended
+     */
     bool war() {
         bool win = true;
         bool lose = true;
@@ -161,7 +177,10 @@ private:
     vector<CUnit*> enemyArmy;
 
 };
-
+/**
+ * function for testing
+ * @param mask
+ */
 void check(vector<vector<CUnit*>> &mask) {
     for (int i = 0; i < 10; i++)
         for (int j = 0; j < 10;j++)
@@ -169,6 +188,9 @@ void check(vector<vector<CUnit*>> &mask) {
                 cout << i << " " << j << " " <<  mask[i][j]->getName() << endl;
 }
 
+/**
+ * Run steps
+ */
 void makeWorld() {
     World *world = new World();
     bool end = false;

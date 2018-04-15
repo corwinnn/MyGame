@@ -11,8 +11,15 @@
 using std::cin;
 using std::min;
 using std::max;
+/**
+ * \brief this class is for speaking with player
+ */
 class Writer {
 public:
+    /**
+     * ask you to order something
+     * @param movepoints current unit movepoints
+     */
     static void wChoise(int movepoints) {
         cout << "Movepoints: " << movepoints << endl << endl;
         cout << "Listen to your orders!" << endl;
@@ -20,31 +27,56 @@ public:
         cout << "2)Move" << endl;
         cout << "3)Nothing" << endl;
     }
+    /**
+     * ask you coordinates
+     */
     static void wTakeCoordinates() {
         cout << "Say the coordinares, my Lord!" << endl;
     }
+    /**
+     * say about error
+     */
     static void wWrongInfo() {
         cout << "Wrong Information!" << endl << endl;
     }
-
+    /**
+     * say that this unit has dead
+     * @param UnitName unit's name
+     */
     static void wDeath(string& UnitName) {
         cout << UnitName << " has dead." << endl;
     }
     static void wDamage(string& UnitName, int damage) {
         cout << UnitName << " " << "lost " << damage << " hp." << endl;
     }
+    /**
+     * say that your unit is healing
+     * @param UnitName
+     */
     static void wHealing(string& UnitName) {
         cout << UnitName << " is healing." << endl;
     }
+    /**
+     * ask you to order the way
+     */
     static void wMoveInfoWarriorArcher() {
         cout << "Say the string of moving includes 'u','d','r','l': ";
     }
+    /**
+     * say about an error
+     */
     static void wMistake() {
         cout << "Sorry, it was a mistake!" << endl;
     }
+    /**
+     * ask you to order the way
+     */
     static void wMoveInfoSpy() {
         cout << "Say the strings of moving includes 'u','d','r','l' with '!' after the last: ";
     }
+    /**
+     * print 2 blank lines
+     */
     static void wLine() {
         cout << endl << endl;
     }
@@ -55,10 +87,25 @@ public:
     CUnit() = default;
 
     CUnit(IRace* r, Map* map) {}
+    /**
+     * your unit's moving
+     * @param mp movepoints
+     */
     virtual void Move(int &mp)=0;
+    /**
+     * hit the enemy
+     * @param move way to enemy on (x,y)
+     * @param x
+     * @param y
+     */
     virtual void Damage(int &move, int x, int y)=0;
+    /**
+     * count the damage to unit's health
+     * if it bigger than health, unit will die
+     * @param damage damage that your unit get from hit
+     */
     void TakeDamage(int damage) {
-        damage -=  defence + _race->getBonusDefence() + defenceWeaponLevel*5;
+        damage -= defence + _race->getBonusDefence() + defenceWeaponLevel * 5;
         if (damage <= 0)
             damage = 0;
         if (damage > health)
@@ -68,7 +115,9 @@ public:
         if (health <= 0)
             Death();
     }
-
+    /**
+     * say about the current unit
+     */
     void getInfo() const{
         cout << UnitName << endl;
         cout << "Health: " << health << endl;
@@ -76,7 +125,17 @@ public:
         (attackDistance > 1) ? cout << " Attack Distance: " << attackDistance << endl:cout << endl;
         cout << "Defence: " << defence + _race->getBonusDefence() + getDWL()* powerWeaponLevel << endl;
     }
+    /**
+     *
+     * @return unit's name
+     */
     string getName() const { return UnitName; }
+    /**
+     * unit recieve orders from you
+     * - move
+     * - fight
+     * - nothing
+     */
     void takeOrders() {
         int movepoints = move + _race->getBonusMove();
         while (movepoints) {
@@ -89,7 +148,7 @@ public:
                 int cx, cy;
                 cin >> cx >> cy;
                 if ((*mask)[cx - 1][cy - 1])
-                   Damage(movepoints, cx, cy);
+                    Damage(movepoints, cx, cy);
                 else {
                     Writer::wWrongInfo();
                     break;
@@ -104,15 +163,19 @@ public:
                 findChurche(x - 1, y - 2);
                 findChurche(x - 1, y);
                 findChurche(x, y - 1);
-               break;
+                break;
             }
-            if (choice == '#'){
+            if (choice == '#') {
                 Death();
                 break;
             }
         }
     }
-
+    /**
+     * set place for unit
+     * @param x
+     * @param y
+     */
     void setPlace(int x, int y) {
         this->x = x;
         this->y = y;
@@ -122,26 +185,69 @@ public:
         if (!isEnemy)
           look();
     }
+    /**
+     * get unit's mark on text map
+     * @return symbol
+     */
     char getSymbol() const{ return symbol;}
+    /**
+     * get x-coordinate
+     * @return x
+     */
     int getX() const {return x; }
+    /**
+     * get y-coordinate
+     * @return y
+     */
     int getY() const {return y; }
+    /**
+     * heal unit if it possible
+     */
     void healing(){
         if (health != maxhealth)
             Writer::wHealing(UnitName);
         health = min(maxhealth, health + _race->getBonusHealth());
     }
+    /**
+     *
+     * @return health of unit
+     */
     int getHealth() const {return health;}
+    /**
+     *
+     * @return maxhealth of unit
+     */
     int getMaxHealth() const {return maxhealth;}
+    /**
+     * set unit's army
+     * @param a
+     */
     void setArmy(vector<CUnit*> *a) {
         army = a;
     }
+    /**
+     * set map with units
+     * @param m
+     */
     void setMask(vector<vector<CUnit*>> *m) {
         mask = m;
     }
+    /**
+     * set map with buildings
+     * @param bm
+     */
     void setBMask(vector<vector<IBuilding*>> *bm) {
         b_mask = bm;
     }
+    /**
+     *
+     * @return weapon's attack level
+     */
     int getAWL() const {return attackWeaponLevel;}
+    /**
+     *
+     * @return weapon's defence level
+     */
     int getDWL() const {return defenceWeaponLevel;}
     ~CUnit() {}
 
@@ -167,6 +273,9 @@ protected:
     bool isEnemy;
     int id;
     int powerWeaponLevel = 5;
+    /**
+     * Unit's death: deleting from maps
+     */
     void Death() {
         Writer::wDeath(UnitName);
         (*army)[id] = NULL;
@@ -175,6 +284,12 @@ protected:
         map->secret[x - 1][y - 1] = '*';
         delete this;
     };
+    /**
+     * check (tx,ty) church's effect's
+     *
+     * @param tx
+     * @param ty
+     */
     void churchEffect(int tx, int ty) {
         if ((*b_mask)[tx][ty]->getPurpose() == "Attack") {
             Builder *b = new Builder(this);
@@ -187,11 +302,19 @@ protected:
             delete b;
         }
     }
+    /**
+     * check is there a churche
+     * @param x
+     * @param y
+     */
     void findChurche(int x, int y) {
         if (y < map->getSize() && y >= 0 && x < map->getSize() && x >=0 && map->map[x][y] == '+') {
             churchEffect(x, y);
         }
     }
+    /**
+     * change '*' to '.' in unit's area of visibility
+     */
     void look(){
         int d = lookDistance + _race->getBonusLookDistance();
         int i0 = max(1, x - d);
@@ -203,6 +326,9 @@ protected:
                 if (map->map[i - 1][j - 1] == '*')
                     map->map[i - 1][j - 1] = map->secret[i - 1][j - 1] == '*' ? '.' : map->secret[i - 1][j - 1];
     }
+    /**
+     * change '.' to '*' in unit's area of visibility when he moves
+     */
     void unlook() {
         int d = lookDistance + _race->getBonusLookDistance();
         int i0 = max(1, x - d);
@@ -219,6 +345,9 @@ protected:
     }
 
 private:
+    /**
+     * \brief buffs attack and defence
+     */
     class Builder{
     public:
         explicit Builder(CUnit* unit) {
@@ -437,6 +566,9 @@ public:
 
 };
 
+/**
+ * \brief Unit's factory
+ */
 class Factory {
 public:
     static CUnit* create(string type, IRace* race, Map* m, bool ie) {
