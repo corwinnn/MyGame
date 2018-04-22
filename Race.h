@@ -16,11 +16,12 @@ using std::cout;
 class IRace {
 public:
     IRace() = default;
-
+    virtual ~IRace() = default;
     string getNameRace() const {return nameRace; }
     string getNameArcher() const {return nameArcher; }
     string getNameWarrior() const  {return nameWarrior; }
     string getNameSpy() const  {return nameSpy; }
+    string getNameHero()const { return nameHero; }
     int getBonusMove() const {return bonusMove; }
     int getBonusAttack() const  {return bonusAttack; }
     int getBonusDefence() const  {return bonusDefence; }
@@ -41,6 +42,7 @@ protected:
     int bonusArcherDistance;
     int bonusLookDistance;
     int bonusHealth;
+    string nameHero = "Hero";
 };
 
 class Dwarfes : public IRace {

@@ -85,7 +85,9 @@ public:
 class CUnit {
 public:
     CUnit() = default;
-
+    virtual void setIds(int &id) {
+        return;
+    }
     CUnit(IRace* r, Map* map) {}
     /**
      * your unit's moving
@@ -99,6 +101,14 @@ public:
      * @param y
      */
     virtual void Damage(int &move, int x, int y)=0;
+    virtual int getASize()=0;
+    virtual CUnit* get(int id) {
+        return NULL;
+    }
+    virtual CUnit* last() {
+        return this;
+    }
+    virtual void setNull(int id) {}
     /**
      * count the damage to unit's health
      * if it bigger than health, unit will die
@@ -157,8 +167,6 @@ public:
             if (choice == '2')
                 Move(movepoints);
             if (choice == '3') {
-                int tx = -1;
-                int ty = -1;
                 findChurche(x - 2, y - 1);
                 findChurche(x - 1, y - 2);
                 findChurche(x - 1, y);
@@ -225,6 +233,9 @@ public:
     void setArmy(vector<CUnit*> *a) {
         army = a;
     }
+    void setId(int i) {
+        id = i;
+    }
     /**
      * set map with units
      * @param m
@@ -249,7 +260,7 @@ public:
      * @return weapon's defence level
      */
     int getDWL() const {return defenceWeaponLevel;}
-    ~CUnit() {}
+    virtual ~CUnit() {}
 
 protected:
     IRace* _race;
@@ -339,7 +350,7 @@ protected:
             for (int j = j0; j <= jl; j++)
                 if (map->map[i - 1][j - 1] == '.' || !(map->map[i - 1][j - 1] >= 'A' && map->map[i - 1][j - 1] <='Z'))
                     map->map[i - 1][j - 1] = '*';
-        for (int i = 0;i < (*army).size();i++)
+        for (size_t i = 0; i < (*army).size();i++)
             if ((*army)[i] != this && (*army)[i])
                 (*army)[i]->look();
     }
@@ -358,6 +369,88 @@ private:
     private:
         CUnit* unit;
     };
+};
+
+class Army : public CUnit {
+public:
+    Army() {}
+
+    void Move(int &mp) override {}
+
+    int getASize() override {
+        int ans = 0;
+
+        for (size_t i = 0; i < army.size(); i++) {
+            if (!army[i]) ans++;
+            else ans += army[i]->getASize();
+        }
+        return ans;
+    }
+
+    void setIds(int &id) override {
+        for (size_t i = 0; i < army.size(); i++) {
+            if (army[i]->getASize() == 1)
+                army[i]->setId(id++);
+            else
+                army[i]->setIds(id);
+        }
+    }
+
+    void Damage(int &move, int x, int y) {}
+
+    void addUnit(CUnit *p) {
+        army.push_back(p);
+    }
+
+    CUnit *last() {
+        if (army[army.size() - 1]->getASize() == 1) {
+            return army[army.size() - 1];
+        }
+        return army[army.size() - 1]->last();
+    }
+
+    CUnit* get(int id) {
+        id++;
+        for (size_t i = 0; i < army.size(); i++) {
+            if (army[i]->getASize() > id)
+                return army[i]->get(id - 1);
+            if (army[i]->getASize() < id)
+                id -= army[i]->getASize();
+            else return army[i]->last();
+        }
+        return NULL;
+    }
+
+    void setNull(int id) {
+        id++;
+        int t_size;
+        for (size_t i = 0; i < army.size(); i++) {
+            t_size = army[i] ? army[i]->getASize() : 1;
+            if (t_size > id) {
+                army[i]->setNull(id - 1);
+                return;
+            }
+            if (t_size < id)
+                id -= t_size;
+            else if (t_size == 1) {
+                army[i] = NULL;
+                return;
+            } else {
+                army[i]->setNull(t_size - 1);
+                return;
+            }
+        }
+    }
+
+    CUnit* &operator[] (int i) { return army[1]; }
+
+    ~Army() {
+        for (size_t i = 0; i < army.size(); ++i)
+            delete army[i];
+    }
+
+    vector<CUnit *> army;
+
 };
 
 class Warrior : public CUnit {
@@ -379,17 +472,20 @@ public:
         if (!ie)
             symbol += 'A' - 'a';
     }
+    int getASize() override {
+        return 1;
+    }
     void Move(int &mp) override {
         Writer::wMoveInfoWarriorArcher();
         string s;
         cin >> s;
-        if (s.length() > mp)
+        if (s.length() > (size_t)mp)
             s = s.substr(0, mp);
         unlook();
         map->map[x-1][y-1] = '*';
         map->secret[x-1][y-1] = '*';
         (*mask)[x-1][y-1] = NULL;
-        for (int i = 0; i < s.length(); i++) {
+        for (size_t i = 0; i < s.length(); i++) {
             if (s[i] == 'r' && y < map->getSize() && map->secret[x - 1][y] == '*')
                 y++;
             if (s[i] == 'l' && y > 1 && map->secret[x - 1][y - 2] == '*')
@@ -441,17 +537,20 @@ public:
         if (!ie)
             symbol += 'A' - 'a';
     }
+    int getASize() override {
+        return 1;
+    }
     void Move(int &mp) override {
         Writer::wMoveInfoWarriorArcher();
         string s;
         cin >> s;
-        if (s.length() > mp)
+        if (s.length() > (size_t)mp)
             s = s.substr(0, mp);
         unlook();
         map->map[x-1][y-1] = '*';
         map->secret[x-1][y-1] = '*';
         (*mask)[x-1][y-1] = NULL;
-        for (int i = 0; i < s.length(); i++) {
+        for (size_t i = 0; i < s.length(); i++) {
             if (s[i] == 'r' && y < map->getSize() && map->secret[x - 1][y] == '*')
                 y++;
             if (s[i] == 'l' && y > 1 && map->secret[x - 1][y - 2] == '*')
@@ -508,11 +607,13 @@ public:
         if (!ie)
             symbol += 'A' - 'a';
     }
+    int getASize() override {
+        return 1;
+    }
     void Move(int &mp) override {
         Writer::wMoveInfoSpy();
         int d = mp;
         map->map[x-1][y-1] = '*';
-        char t;
         string s="";
         int j = 0;
         for (int i = 0; i < d; i++) {
@@ -521,7 +622,7 @@ public:
             (*mask)[x-1][y-1] = NULL;
             unlook();
             mp--;
-            if (j == s.length()) {
+            if (j == (int)s.length()) {
                 j = 0;
                 cin >> s;
             }
@@ -543,7 +644,7 @@ public:
                 return;
             }
             j++;
-            if (j == s.length() || i == d - 1) {
+            if (j == (int)s.length() || i == d - 1) {
                 Writer::wLine();
                 map->showMap();
             }
@@ -566,6 +667,70 @@ public:
 
 };
 
+class Hero : public CUnit {
+public:
+    Hero() {}
+    Hero(IRace* race, Map* m, bool ie) {
+        id = 3;
+        _race = race;
+        map = m;
+        UnitName = _race->getNameWarrior();
+        move = 16;
+        defence = 250;
+        attack = 1350;
+        lookDistance = 5;
+        health = 1600;
+        maxhealth = 1600;
+        symbol = 'h';
+        isEnemy = ie;
+        if (!ie)
+            symbol += 'A' - 'a';
+    }
+    int getASize() override {
+        return 1;
+    }
+    void Move(int &mp) override {
+        Writer::wMoveInfoWarriorArcher();
+        string s;
+        cin >> s;
+        if (s.length() > (size_t)mp)
+            s = s.substr(0, mp);
+        unlook();
+        map->map[x-1][y-1] = '*';
+        map->secret[x-1][y-1] = '*';
+        (*mask)[x-1][y-1] = NULL;
+        for (size_t i = 0; i < s.length(); i++) {
+            if (s[i] == 'r' && y < map->getSize() && map->secret[x - 1][y] == '*')
+                y++;
+            if (s[i] == 'l' && y > 1 && map->secret[x - 1][y - 2] == '*')
+                y--;
+            if (s[i] == 'u' && x > 1 && map->secret[x - 2][y - 1] == '*')
+                x--;
+            if (s[i] == 'd' && x < map->getSize() && map->secret[x][y - 1] == '*')
+                x++;
+        }
+        map->map[x-1][y-1] = symbol;
+        map->secret[x-1][y-1] = symbol;
+        (*mask)[x-1][y-1] = this;
+        look();
+        map->showMap();
+        mp = 0;
+    }
+
+    void Damage(int &move, int cx, int cy) override {
+        Move(move);
+        if (abs(x - cx) + abs(y - cy) == 1) {
+            (*mask)[cx - 1][cy - 1]->TakeDamage(attack + _race->getBonusAttack() + attackWeaponLevel * powerWeaponLevel);
+        }
+        else {
+            Writer::wMistake();
+            TakeDamage(45);
+        }
+        map->showMap();
+    }
+
+};
+
 /**
  * \brief Unit's factory
  */
@@ -578,6 +743,9 @@ public:
             return new Archer(race, m, ie);
         if (type == "Warrior")
             return new Warrior(race, m, ie);
+        if (type == "Hero")
+            return new Hero(race, m, ie);
+        return NULL;
     }
 };
 
