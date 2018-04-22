@@ -101,10 +101,23 @@ public:
      * @param y
      */
     virtual void Damage(int &move, int x, int y)=0;
+    /**
+     * count size of squad
+     * @return size
+     */
     virtual int getASize()=0;
+
+    /**
+     * count size of squad
+     * @return size
+     */
     virtual CUnit* get(int id) {
         return NULL;
     }
+    /**
+     *
+     * @return last unit in squad
+     */
     virtual CUnit* last() {
         return this;
     }
@@ -370,7 +383,11 @@ private:
         CUnit* unit;
     };
 };
-
+/**
+ *
+ * \brief Composite pattern.
+ *
+ */
 class Army : public CUnit {
 public:
     Army() {}
@@ -386,7 +403,10 @@ public:
         }
         return ans;
     }
-
+    /**
+     * set ids for units
+     * @param id first id
+     */
     void setIds(int &id) override {
         for (size_t i = 0; i < army.size(); i++) {
             if (army[i]->getASize() == 1)
@@ -397,7 +417,10 @@ public:
     }
 
     void Damage(int &move, int x, int y) {}
-
+    /**
+     * adds unit or squad
+     * @param p
+     */
     void addUnit(CUnit *p) {
         army.push_back(p);
     }
@@ -420,7 +443,10 @@ public:
         }
         return NULL;
     }
-
+    /**
+     * set nulls by id in case of deaths
+     * @param id
+     */
     void setNull(int id) {
         id++;
         int t_size;
@@ -442,7 +468,6 @@ public:
         }
     }
 
-    CUnit* &operator[] (int i) { return army[1]; }
 
     ~Army() {
         for (size_t i = 0; i < army.size(); ++i)

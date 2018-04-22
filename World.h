@@ -26,14 +26,18 @@ public:
 };
 Map* GameMap::m_instance = nullptr;
 /**
- * \brief Makes the gameworld. Initializes maps with objects.
+ * \brief Army Decorator. Show the order of army groups.
  */
-class UnitsOrder{
+class UnitsOrderDecorator{
 public:
     Army* army;
-    UnitsOrder(Army* a) {
+    UnitsOrderDecorator(Army* a) {
         army = a;
     }
+    /**
+     *
+     * @return string scheme of warriors
+     */
     string lineWarriors() {
         string ans = "";
         for (int i = 0; i < army->army.size(); i++) {
@@ -46,6 +50,9 @@ public:
     }
 };
 
+/**
+ * \brief Makes the gameworld. Initializes maps with objects.
+ */
 class World {
 public:
     /**
@@ -125,29 +132,30 @@ public:
             enemyArmy[i]->setArmy(&enemyArmy);
         }
         int ww = 0;
-        isf = new UnitsOrder(my_army);
+        isf = new UnitsOrderDecorator(my_army);
 
 
     }
-
+    /**
+     * Add an attack church
+     * @param x - first coordinate
+     * @param y - second coordinate
+     * @param p - power of the church
+     */
     void AddChurchA(int x, int y, int p) {
         b_mask[x][y] = new ChurchA(x + 1, y + 1, m, p);
     }
+    /**
+     * Add an defence church church
+     * @param x - first coordinate
+     * @param y - second coordinate
+     * @param p - power of the church
+     */
     void AddChurchB(int x, int y, int p) {
         b_mask[x][y] = new ChurchD(x + 1, y + 1, m, p);
     }
 
-    void setArmy(vector<CUnit*> &army, int size, bool enemy) {
-        army.resize(size);
-        for (int i = 0; i < size; i++) {
-            army[i] = Factory::create(types[i], enemyRace, m, enemy);
-            army[i]->setId(i);
-        }
-        for (int i = 0; i < size; i++) {
-            army[i]->setArmy(&army);
-        }
 
-    }
 
     /**
      *
@@ -219,7 +227,7 @@ public:
             }
     }
 
-    UnitsOrder* isf;
+    UnitsOrderDecorator* isf;
 
 private:
 
