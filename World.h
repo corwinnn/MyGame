@@ -4,12 +4,78 @@
 
 #ifndef MYGAME_WORLD_H
 #define MYGAME_WORLD_H
-
 #include "Units.h"
+class Period {
+public:
+    string name;
+    Period* next;
+    Period(string name):
+            name(name)
+    {}
+
+};
+/**
+ * Interface of command
+ */
+class Command{
+protected:
+    CUnit* unit;
+public:
+    virtual bool Execute(int& m) = 0;
+    Command(CUnit* _unit) {
+        unit = _unit;
+    }
+};
+/**
+ * command 'Atack'
+ */
+class Attack : public Command {
+public:
+    Attack(CUnit* _unit) : Command(_unit){};
+    bool Execute(int& movepoints){
+        Writer::wTakeCoordinates();
+        int cx, cy;
+        cin >> cx >> cy;
+        if ((*unit->mask)[cx - 1][cy - 1])
+            unit->Damage(movepoints, cx, cy);
+        else {
+            Writer::wWrongInfo();
+            return false;
+        }
+        return true;
+    }
+};
+/**
+ * command 'Move'
+ */
+class Move : public Command {
+public:
+    Move(CUnit* _unit) : Command(_unit) {};
+
+    bool Execute(int &movepoints) {
+        unit->Move(movepoints);
+        return true;
+    }
+};
+/**
+ * command to do nothing
+ */
+class Relax : public Command {
+public:
+    Relax(CUnit* _unit) : Command(_unit) {};
+
+    bool Execute(int &movepoints) {
+        unit->findChurche(unit->x - 2, unit->y - 1);
+        unit->findChurche(unit->x - 1, unit->y - 2);
+        unit->findChurche(unit->x - 1, unit->y);
+        unit->findChurche(unit->x, unit->y - 1);
+        return false;
+    }
+};
+
 /**
  * \brief Singleton class. Makes gamemap.
  */
-
 class GameMap {
 private:
     static Map* m_instance;
@@ -40,7 +106,7 @@ public:
      */
     string lineWarriors() {
         string ans = "";
-        for (int i = 0; i < army->army.size(); i++) {
+        for (unsigned int i = 0; i < army->army.size(); i++) {
             string c = "";
             for (int j = 0; j < army->army[i]->getASize();j++)
                 c += 'W';
@@ -59,6 +125,14 @@ public:
      * Initializing
      */
     World(){
+        Periods[0] = new Period("Summer");
+        Periods[1] = new Period("Autumn");
+        Periods[2] = new Period("Winter");
+        Periods[3] = new Period("Spring");
+        for (int i = 0; i < 4; i++)
+            Periods[i]->next = Periods[(i + 1) % 4];
+        curPeriod = Periods[0];
+
         types = new string [count_units];
         types[0] = "Spy";
         types[1] = "Archer";
@@ -131,7 +205,6 @@ public:
             enemyArmy.push_back(enemy_army->get(i));
             enemyArmy[i]->setArmy(&enemyArmy);
         }
-        int ww = 0;
         isf = new UnitsOrderDecorator(my_army);
 
 
@@ -187,11 +260,44 @@ public:
         bool lose = true;
         static int step = 0;
         m->showMap();
+        if (step % 4 == 0) {
+            curPeriod = curPeriod->next;
+            cout << "New Period:" << curPeriod->name << endl;
+        }
         step++;
         cout << endl << "STEP " << " " << step << endl;
         for (int i = 0 ; i < count_units; i++) {
             if (my_army->get(i)) {
-                my_army->get(i)->takeOrders();
+                CUnit* unit = my_army->get(i);
+                int movepoints = unit->move + unit->_race->getBonusMove();
+                while (movepoints) {
+                    unit->getInfo();
+                    Writer::wChoise(movepoints);
+                    char choice = '3';
+                    cin >> choice;
+                    if (choice == '1') {
+                        Command* command = new Attack(unit);
+                        if (!command->Execute(movepoints))
+                            break;
+                        delete command;
+                    }
+                    if (choice == '2') {
+                        Command *command = new Move(unit);
+                        if (!command->Execute(movepoints))
+                            break;
+                        delete command;
+                    }
+                    if (choice == '3') {
+                        Command *command = new Relax(unit);
+                        if (!command->Execute(movepoints))
+                            break;
+                        delete command;
+                    }
+                    if (choice == '#') {
+                        unit->Death();
+                        break;
+                    }
+                }
                 lose = false;
             }
         }
@@ -230,7 +336,7 @@ public:
     UnitsOrderDecorator* isf;
 
 private:
-
+    Period* Periods[4], *curPeriod;
     Map *m;
     IRace* myRace;
     IRace* enemyRace;

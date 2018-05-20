@@ -80,7 +80,7 @@ public:
     static void wLine() {
         cout << endl << endl;
     }
-    
+
 };
 class CUnit {
 public:
@@ -274,14 +274,17 @@ public:
      */
     int getDWL() const {return defenceWeaponLevel;}
     virtual ~CUnit() {}
-
-protected:
-    IRace* _race;
-    vector<CUnit*> *army;
     vector<vector<CUnit*>> *mask;
     vector<vector<IBuilding*>> *b_mask;
-    string UnitName;
     int move;
+    int x;
+    int y;
+    IRace* _race;
+
+    vector<CUnit*> *army;
+
+    string UnitName;
+
     int defence;
     int attack;
     int attackDistance = 1;
@@ -290,8 +293,7 @@ protected:
     int maxhealth;
     int attackWeaponLevel = 0;
     int defenceWeaponLevel = 0;
-    int x;
-    int y;
+
     char symbol;
     Map* map;
     bool isEnemy;
